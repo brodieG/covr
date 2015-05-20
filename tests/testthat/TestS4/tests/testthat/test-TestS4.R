@@ -18,3 +18,7 @@ test_that("TestS4 Methods can be evaluated", {
 
   print(print2(t1, "hi"))
 })
+
+test_that("TestS4 stop methods work", {
+  expect_error(stop("test"))
+})
