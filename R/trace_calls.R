@@ -209,35 +209,7 @@ fix_srcref <- function(x, parent_src_ref) {
 
   }
 
-
   x
-}
-#s <- "if(method == \"linear\") {
-        ### linear method (no iteration!)
-        #lambda <- ginv(t(X * d * q) %*% X, tol=eps) %*% (totals - as.vector(t(d) %*% X))
-        #g <- 1 + q * as.vector(X %*% lambda)  # g-weights
-    #} else {
-        ### multiplicative method (raking) or logit method
-        #lambda <- matrix(0, nrow=p)  # initial values
-        ## function to determine whether teh desired accuracy has
-        ## not yet been reached (to be used in the 'while' loop)
-        #tolNotReached <- function(X, w, totals, tol) {
-            #max(abs(crossprod(X, w) - totals) / totals) >= tol
-        #}
-    #}"
-        #if(method == \"raking\") {
-            ### multiplicative method (raking)
-            ## some initial values
-            #g <- rep.int(1, n)  # g-weights
-            #w <- d  # sample weights
-            ### iterations
-            #i <- 1
-            #while(!any(is.na(g)) && tolNotReached(X, w, totals, tol) && i <= maxit) {
-                ## here 'phi' describes mor"
-f3 <- function() {
-  if (TRUE) { print("else") ; print('hi')} #else 2
-  else { message ( `else` ) } # else }
-  #if (TRUE) { 3 } else { 4 }
 }
 
 .counters <- new.env(parent = emptyenv())
