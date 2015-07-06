@@ -179,3 +179,23 @@ if (getRversion() < "3.2.0") {
 is_windows <- function() {
   .Platform$OS.type == "windows"
 }
+
+# taken from lintr::replace_prefix
+blank_pattern <- function(lines, pattern) {
+  if (is.null(pattern)) {
+    return(lines)
+  }
+
+  m <- gregexpr(paste0("(?s)", pattern), lines, perl = TRUE)
+  non_na <- !is.na(m)
+
+  blanks <- function(n) {
+    vapply(Map(rep.int, rep.int(" ", length(n)), n, USE.NAMES = FALSE),
+      paste, "", collapse = "")
+  }
+
+  regmatches(lines[non_na], m[non_na]) <-
+    Map(blanks, lapply(regmatches(lines[non_na], m[non_na]), nchar))
+
+  lines
+}
