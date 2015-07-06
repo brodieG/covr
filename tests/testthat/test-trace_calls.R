@@ -97,3 +97,28 @@ test_that("functions with NULL bodies are traced correctly", {
 
   expect_equal(trace_calls(fun), fun)
 })
+
+test_that("functions containing conditionals without braces are traced correctly", {
+  old <- options(keep.source = TRUE)
+  on.exit(options(old))
+
+  f3 <- function() {
+    if (TRUE) print("else") #else 2
+    else message ( `else` )  # else }
+  }
+  e1 <- body(trace_calls(f3))[[2]][[1]]
+  expect_true(length(e1) > 1 &&
+    identical(as.character(e1[[2]][[1]]), c(":::", "covr", "count")))
+
+  e2 <- body(trace_calls(f3))[[2]][[2]]
+  expect_true(length(e2) > 1 &&
+    identical(as.character(e2[[2]][[1]]), c(":::", "covr", "count")))
+
+  e3 <- body(trace_calls(f3))[[2]][[3]]
+  expect_true(length(e3) > 1 &&
+    identical(as.character(e3[[2]][[1]]), c(":::", "covr", "count")))
+
+  e4 <- body(trace_calls(f3))[[2]][[4]]
+  expect_true(length(e4) > 1 &&
+    identical(as.character(e4[[2]][[1]]), c(":::", "covr", "count")))
+})

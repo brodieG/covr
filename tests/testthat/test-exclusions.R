@@ -140,7 +140,7 @@ test_that("it preserves the class", {
 test_that("it excludes properly", {
   t1 <- package_coverage("TestExclusion")
 
-  expect_equal(length(t1), 3)
+  expect_equal(length(t1), 4)
 
   t1 <- package_coverage("TestExclusion", exclusions = "R/TestExclusion.R")
 
