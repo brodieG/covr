@@ -282,7 +282,7 @@ run_tests <- function(pkg, tmp_lib, dots, type, quiet) {
       c(dots,
         quote("library(methods)"),
         if (type == "test" && file.exists(testing_dir)) {
-          bquote(try(source_dir(path = .(testing_dir), env = .(env), quiet = .(quiet))))
+          bquote(source_dir(path = .(testing_dir), env = .(env), quiet = .(quiet)))
         } else if (type == "vignette" && file.exists(vignette_dir)) {
           lapply(dir(vignette_dir, pattern = rex::rex(".", one_of("R", "r"), or("nw", "md")), full.names = TRUE),
             function(file) {
