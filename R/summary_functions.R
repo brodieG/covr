@@ -125,6 +125,57 @@ print.coverage <- function(x, group = c("filename", "functions"), by = "line", .
 }
 
 #' @export
+print.function <- function(x, ..., coverage = NULL) {
+  if (is.null(coverage)) {
+    return(base::print.function(x, ...))
+  }
+
+  coverages <- per_line(coverage)
+
+  fun <- deparse(substitute(x))
+  fun <- gsub(".*:::?", "", fun)
+
+  df <- as.data.frame(coverage)
+  fun_coverage <- df[rex::re_matches(df$functions, rex::rex(boundary, fun, boundary)),]
+
+  if (!length(fun_coverage)) {
+    stop("Function ", sQuote(fun), " not in coverage object", call. = FALSE)
+  }
+
+  fun_file <- Filter(function(xx) display_name(xx$file) == fun_coverage$filename[1], coverages)[[1]]
+
+  line_nums <- seq(min(fun_coverage$first_line) - 1L, max(fun_coverage$last_line) + 1L)
+
+  lines <- fun_file$file$file_lines[line_nums]
+  covered_lines <- !is.na(fun_file$coverage[line_nums]) & fun_file$coverage[line_nums] > 0
+  uncovered_lines <- !is.na(fun_file$coverage[line_nums]) & fun_file$coverage[line_nums] == 0
+
+  lines[covered_lines] <- crayon::green(lines[covered_lines])
+  lines[uncovered_lines] <- crayon::red(lines[uncovered_lines])
+  cat(lines, sep = "\n")
+}
+
+# take a df return a df with per line coverage
+per_line_df <- function(x) {
+  by(x, INDICES = list(x$filename, x$functions), simplify = FALSE, FUN = 
+     function(xx, ...) {
+       res <- data.frame(line = seq(min(x$first_line), max(x$last_line)), value = 0)
+       for (i in seq_along(NROW(x))) {
+         for (line in seq(xx[i, "first_line"], xx[i, "last_line"])) {
+           if (xx[i, "value"] <  res[res$line == line, "value"]) {
+             xx[i, "value"] <- res[res$line == line, "value"]
+           }
+         }
+      }
+     })
+}
+
+
+
+
+
+
+#' @export
 print.coverages <- function(x, ...) {
   for(i in seq_along(x)) {
     # Add a blank line between consecutive coverage items
