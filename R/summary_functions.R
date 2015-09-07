@@ -144,7 +144,12 @@ print.function <- function(x, ..., coverage = NULL) {
 
   fun_file <- Filter(function(xx) display_name(xx$file) == fun_coverage$filename[1], coverages)[[1]]
 
-  line_nums <- seq(min(fun_coverage$first_line) - 1L, max(fun_coverage$last_line) + 1L)
+  src_ref <- attr(x, "srcref")
+  if (!is.null(src_ref)) {
+    line_nums <- seq(src_ref[1], src_ref[3])
+  } else {
+    line_nums <- seq(min(fun_coverage$first_line) - 1L, max(fun_coverage$last_line) + 1L)
+  }
 
   lines <- fun_file$file$file_lines[line_nums]
   covered_lines <- !is.na(fun_file$coverage[line_nums]) & fun_file$coverage[line_nums] > 0
