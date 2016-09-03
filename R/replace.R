@@ -19,7 +19,7 @@ replacements_rec <- function(target_value) {
         lapply(
           target_value,
           function(x)
-            if(is.recursive(x)) replacement_rec(x) else
+            if(is.recursive(x)) replacements_rec(x) else
               list(replacement(target_value=x, name="identity"))
         ),
         recursive=FALSE
@@ -37,7 +37,7 @@ replacements_rec <- function(target_value) {
       length(attrs <- attributes(target_value)) &&
       length(attrs.not.names <- which(names(attrs) != "names"))
     ) {
-      replacement_rec(attrs[attrs.not.names])
+      replacements_rec(attrs[attrs.not.names])
     }
   )
 }
