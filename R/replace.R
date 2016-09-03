@@ -12,7 +12,7 @@
 ## Note we use \"identity\" as a dummy value for elements; doesn't seem to
 ## affect anything.
 
-replacement_rec <- function(target_value) {
+replacements_rec <- function(target_value) {
   c(
     if(is.list(target_value) || is.pairlist(target_value)) {
       unlist(
