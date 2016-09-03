@@ -16,8 +16,8 @@ trace_environment <- function(env) {
       replacements_S4(env),
       replacements_RC(env),
       replacements_R6(env),
-      lapply(ls(env, all.names = TRUE), replacement, env = env)))
-
+      replacement_rec(mget(ls(env, all.names = TRUE), env))
+  ))
   lapply(the$replacements, replace)
 }
 
