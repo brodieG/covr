@@ -1,5 +1,3 @@
-.dummy.name <- quote(dummy.name)
-
 ## Recursively Generate Fun Replacement Data
 ##
 ## Note that `name` and `env` are not actually necessary or really used, so we
@@ -10,6 +8,9 @@
 ## list of all the functions that need replacing with their traced replacement
 ## and the original value.  This does not actually execute the replacement.  For
 ## that to happen `replace` must be run on each element of the return value.
+##
+## Note we use \"identity\" as a dummy value for elements; doesn't seem to
+## affect anything.
 
 replacement_rec <- function(target_value) {
   c(
@@ -18,8 +19,8 @@ replacement_rec <- function(target_value) {
         lapply(
           target_value,
           function(x)
-            if(is.recursive(x)) replace_rec(x) else
-            replacement(target_value=x, name=.dummy.name)
+            if(is.recursive(x)) replacement_rec(x) else
+              list(replacement(target_value=x, name="identity"))
         ),
         recursive=FALSE
       )
@@ -30,19 +31,29 @@ replacement_rec <- function(target_value) {
 
       NULL
     } else {
-      replacement(target_value=x, name=.dummy.name)
+      list(replacement(target_value=target_value, name="identity"))
     },
-    if(length(attrs <- atributes(target_value))) {
-      replace_rec(attrs)
+    if(
+      length(attrs <- attributes(target_value)) &&
+      length(attrs.not.names <- which(names(attrs) != "names"))
+    ) {
+      replacement_rec(attrs[attrs.not.names])
     }
   )
 }
 
 #' @useDynLib covr covr_duplicate_
+
+NULL
+
+## Generate a Replacement List
+##
+## Returns a list with a copy of the original function, traced function, and the
+## SEXP that needs to be replaced.  Actual replacement is done by `replace`.
+##
+## @name character, presumably name of function but can seemingly be anything
+
 replacement <- function(name, env = as.environment(-1), target_value = get(name, envir = env)) {
-  # Replace by reference any functions by traced versions of themselves, and
-  # return return the modified function along with a duplicated copy of the
-  # original so that we may use `reset` to restore the original verison.
 
   if (is.function(target_value) && !is.primitive(target_value)) {
     if (is_vectorized(target_value)) {
